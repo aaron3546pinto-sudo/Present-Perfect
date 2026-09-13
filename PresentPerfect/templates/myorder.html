@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Fixed meta tag -->
+    <title>Your Orders</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/styles.css">
+    <style>
+        .order-item {
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .order-item h5 {
+            margin-bottom: 10px;
+        }
+
+        .order-item ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .order-item ul li {
+            margin-bottom: 5px;
+        }
+
+        .btn-clear {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            margin-top: 20px;
+        }
+
+        .btn-received {
+            background-color: #28a745;
+            color: #fff;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="/">PresentPerfect</a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item"><a class="nav-link" href="home.html">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="mycart.html">My Cart</a></li>
+                <li class="nav-item active"><a class="nav-link" href="myorder.html">My Orders</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="my-5 text-center">Your Orders</h1>
+
+        <!-- Clear Order History Button -->
+        <button class="btn btn-clear" onclick="clearOrderHistory()">Clear Order History</button>
+
+        <div id="orderList" class="mt-4"></div>
+    </div>
+
+    <script>
+        function generateRandomOrderNumber() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < 8; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        function loadOrders() {
+            let orders = JSON.parse(localStorage.getItem('orders')) || [];
+            const orderList = document.getElementById('orderList');
+
+            if (orders.length === 0) {
+                orderList.innerHTML = '<p>No orders found.</p>';
+                return;
+            }
+
+            orders.forEach((order, index) => {
+                const orderDiv = document.createElement('div');
+                orderDiv.classList.add('order-item', 'mb-4');
+                const orderNumber = generateRandomOrderNumber();  // Generate random order number
+
+                orderDiv.innerHTML = `
+                    <h5>Order #${orderNumber}</h5>
+                    <p><strong>Date:</strong> ${order.timestamp}</p>
+                    <p><strong>Total Amount:</strong> $${order.totalAmount}</p>
+                    <h6>Items:</h6>
+                    <ul>${order.cart.map(item => `<li>${item.name} - $${item.price} (x${item.quantity})</li>`).join('')}</ul>`
+                    //<button class="btn btn-received" onclick="markAsReceived(${index})">Order Received</button>
+                ;
+                orderList.appendChild(orderDiv);
+            });
+        }
+
+        function clearOrderHistory() {
+            if (confirm('Are you sure you want to clear your order history?')) {
+                localStorage.removeItem('orders');  // Remove all orders from local storage
+                document.getElementById('orderList').innerHTML = '';  // Clear the displayed order list
+                alert('Your order history has been cleared.');
+            }
+        }
+
+        function markAsReceived(index) {
+            let orders = JSON.parse(localStorage.getItem('orders')) || [];
+            if (orders.length > 0 && index < orders.length) {
+                orders.splice(index, 1);  // Remove the specific order from the array
+                localStorage.setItem('orders', JSON.stringify(orders));  // Update the orders in local storage
+
+                // Re-load the updated order list
+                loadOrders();
+                alert('Thank you for shopping! Your order has been marked as received.');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadOrders);
+    </script>
+</body>
+</html>

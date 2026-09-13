@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PresentPerfect - Home</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="/">PresentPerfect</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="userlogin.html">Login</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Categories
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                        <h6 class="dropdown-header">Types of Gifts</h6>
+                        <a class="dropdown-item" href="#" onclick="filterGiftsByCategory('luxury')">Luxury Gifts</a>
+                        <a class="dropdown-item" href="#" onclick="filterGiftsByCategory('handmade')">Handmade Gifts</a>
+                        <a class="dropdown-item" href="#" onclick="filterGiftsByCategory('chocolate')">Chocolate Gifts</a>
+                        <a class="dropdown-item" href="#" onclick="filterGiftsByCategory('personalized')">Personalized Gifts</a>
+                        <a class="dropdown-item" href="#" onclick="filterGiftsByCategory('fashion')">Fashion Accessories</a>
+                        <div class="dropdown-divider"></div>
+                        <h6 class="dropdown-header">Occasions</h6>
+                        <a class="dropdown-item" href="#" onclick="filterGiftsByOccasion('birthday')">Birthdays</a>
+                        <a class="dropdown-item" href="#" onclick="filterGiftsByOccasion('anniversary')">Anniversaries</a>
+                        <a class="dropdown-item" href="#" onclick="filterGiftsByOccasion('wedding')">Weddings</a>
+                        <a class="dropdown-item" href="#" onclick="filterGiftsByOccasion('holidays')">Holidays</a>
+                        <a class="dropdown-item" href="#" onclick="filterGiftsByOccasion('graduation')">Graduations</a>  
+                    </div>
+                </li>
+            </ul>
+            <div class="search-container ml-auto">
+                <span class="text-white" id="loginStatus"></span>
+                <input type="text" id="searchInput" placeholder="Search for gifts..." onkeyup="searchGifts()">
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="display-4 text-center my-5">Exclusive Gifts for Every Occasion</h1>
+        <div class="row" id="giftList">
+            <!-- Gift Items Here -->
+        </div>
+    </div>
+
+    <script>
+        const gifts = [
+            // Luxury Gifts
+            { name: "Designer Leather Handbag", description: "A luxury leather handbag that adds elegance to any outfit.", image: "../static/images/luxury1.jpg", price: 150, category: "luxury", occasion: "anniversary" },
+            { name: "High-End Watch", description: "A timeless high-end watch for sophisticated individuals.", image: "../static/images/luxury2.jpg", price: 250, category: "luxury", occasion: "birthday" },
+            { name: "Premium Luxurious Perfume Set", description: "A premium collection of fine smelling perfumes.", image: "../static/images/luxury3.jpg", price: 120, category: "luxury", occasion: "holidays" },
+            { name: "Crystal Wine Decanter Set", description: "A crystal decanter set for the perfect wine experience.", image: "../static/images/luxury4.jpg", price: 180, category: "luxury", occasion: "wedding" },
+            { name: "Luxury Spa Set", description: "Pamper yourself with this luxurious spa set.", image: "../static/images/luxury5.jpg", price: 100, category: "luxury", occasion: "birthday" },
+            
+            // Handmade Gifts
+            { name: "Handcrafted Wooden Jewelry Box", description: "An elegantly handcrafted jewelry box.", image: "../static/images/handmade1.jpg", price: 50, category: "handmade", occasion: "birthday" },
+            { name: "Embroidered Pillow Covers", description: "Add charm with these beautifully embroidered pillow covers.", image: "../static/images/handmade2.jpg", price: 30, category: "handmade", occasion: "anniversary" },
+            { name: "Handwoven Baskets", description: "These handwoven baskets make perfect home decor.", image: "../static/images/handmade3.jpg", price: 35, category: "handmade", occasion: "holidays" },
+            { name: "Macramé Wall Hanging", description: "A stunning macramé wall hanging to enhance your room.", image: "../static/images/handmade4.jpg", price: 60, category: "handmade", occasion: "wedding" },
+            { name: "Handmade Pottery Mug Set", description: "A beautiful set of handcrafted pottery mugs.", image: "../static/images/handmade5.jpg", price: 40, category: "handmade", occasion: "graduation" },
+            
+            // Chocolate Gifts
+            { name: "Gourmet Belgian Chocolate Box", description: "A premium Belgian chocolate gift box.", image: "../static/images/chocolate1.jpg", price: 45, category: "chocolate", occasion: "birthday" },
+            { name: "Chocolate-Covered Strawberries", description: "Delicious strawberries covered in smooth chocolate.", image: "../static/images/chocolate2.jpg", price: 25, category: "chocolate", occasion: "holidays" },
+            { name: "Hot Chocolate Gift Set", description: "Everything you need for a luxurious hot chocolate experience.", image: "../static/images/chocolate3.jpg", price: 35, category: "chocolate", occasion: "graduation" },
+            { name: "Artisanal Truffle Selection", description: "A selection of rich, artisanal chocolate truffles.", image: "../static/images/chocolate4.jpg", price: 40, category: "chocolate", occasion: "anniversary" },
+            { name: "Luxury Chocolate Gift Basket", description: "A luxury basket filled with the finest chocolates.", image: "../static/images/chocolate5.jpg", price: 60, category: "chocolate", occasion: "wedding" },
+            
+            // Personalized Gifts
+            { name: "Personalized Engraved Wooden Pen Set", description: "A beautiful wooden pen set with personalized engraving.", image: "../static/images/personalised1.jpg", price: 30, category: "personalized", occasion: "graduation" },
+            { name: "Customizable Leather Wallet", description: "A sleek, customizable leather wallet.", image: "../static/images/personalised2.jpg", price: 45, category: "personalized", occasion: "birthday" },
+            { name: "Personalized Engraved Wine Glasses", description: "A set of engraved wine glasses for special moments.", image: "../static/images/personalised3.jpg", price: 50, category: "personalized", occasion: "wedding" },
+            { name: "Custom Embroidered Tote Bag", description: "A stylish tote bag with custom embroidery.", image: "../static/images/personalised4.jpg", price: 40, category: "personalized", occasion: "anniversary" },
+            { name: "Customized Wooden Photo Frame", description: "A customized wooden photo frame for your favorite picture.", image: "../static/images/personalised5.jpg", price: 25, category: "personalized", occasion: "birthday" },
+            
+            // Fashion Accessories
+            { name: "Leather Strap Watch", description: "A classy leather strap watch for any occasion.", image: "../static/images/fashion1.jpg", price: 90, category: "fashion", occasion: "graduation" },
+            { name: "Sleek Stainless Steel Necklace", description: "A sleek stainless steel necklace for fashion-forward individuals.", image: "../static/images/fashion2.jpg", price: 60, category: "fashion", occasion: "wedding" },
+            { name: "Elegant Rose Gold Earrings", description: "Elegant rose gold earrings to enhance any outfit.", image: "../static/images/fashion3.jpg", price: 80, category: "fashion", occasion: "holidays" },
+            { name: "Vintage Pocket Watch", description: "A vintage-inspired pocket watch.", image: "../static/images/fashion4.jpg", price: 70, category: "fashion", occasion: "birthday" },
+            { name: "Silk Scarf Set", description: "A luxurious set of silk scarves in various patterns.", image: "../static/images/fashion5.jpg", price: 55, category: "fashion", occasion: "anniversary" }
+        ];
+
+        // Save items to localStorage for both categories and occasions
+        function saveToLocalStorage() {
+            const categories = ['luxury', 'handmade', 'chocolate', 'personalized', 'fashion'];
+            const occasions = ['birthday', 'anniversary', 'wedding', 'holidays', 'graduation'];
+
+            let storedGifts = {};
+
+            gifts.forEach(gift => {
+                // Store by category
+                if (!storedGifts[gift.category]) {
+                    storedGifts[gift.category] = [];
+                }
+                storedGifts[gift.category].push(gift);
+
+                // Store by occasion
+                if (!storedGifts[gift.occasion]) {
+                    storedGifts[gift.occasion] = [];
+                }
+                storedGifts[gift.occasion].push(gift);
+            });
+
+            categories.forEach(category => {
+                localStorage.setItem(category, JSON.stringify(storedGifts[category] || []));
+            });
+
+            occasions.forEach(occasion => {
+                localStorage.setItem(occasion, JSON.stringify(storedGifts[occasion] || []));
+            });
+        }
+
+        saveToLocalStorage();
+
+        // Display all gifts on the homepage
+        const giftListContainer = document.getElementById('giftList');
+        gifts.forEach(gift => {
+            const giftElement = document.createElement('div');
+            giftElement.classList.add('col-md-4');
+            giftElement.innerHTML = `
+                <div class="gift-item p-3">
+                    <img src="${gift.image}" alt="${gift.name}" class="img-fluid">
+                    <h3>${gift.name}</h3>
+                    <p>${gift.description}</p>
+                    <p><strong>Price: $${gift.price.toFixed(2)}</strong></p>
+                    <button class="btn btn-primary" onclick="addToCart({ name: '${gift.name}', price: ${gift.price}, quantity: 1 })">Add to Cart</button>
+                </div>
+            `;
+            giftListContainer.appendChild(giftElement);
+        });
+         // Function to add item to cart with login check
+    function addToCart(item) {
+        // Check if user is logged in
+        const isLoggedIn = localStorage.getItem('isLoggedIn'); // Assuming login status is stored in 'isLoggedIn' key
+        if (!isLoggedIn || isLoggedIn === 'false') {
+            // Alert the user to log in
+            alert('Please log in to add items to your cart.');
+            // Redirect to login page
+            window.location.href = 'userlogin.html';
+            return;
+        }
+    }
+    // Function to filter gifts by category
+    function filterGiftsByCategory(category) {
+        const filteredGifts = gifts.filter(gift => gift.category === category);
+        displayGifts(filteredGifts);
+        // Redirect to categories1.html with the selected category as a query parameter
+        window.location.href = `categories.html?category=${encodeURIComponent(category)}`;
+    }
+    // Function to filter gifts by occasion
+    function filterGiftsByOccasion(occasion) {
+        const filteredGifts = gifts.filter(gift => gift.occasion === occasion);
+        displayGifts(filteredGifts);
+        window.location.href = `categories.html?category=${encodeURIComponent(category)}`;
+    }
+    </script>
+</body>
+</html>

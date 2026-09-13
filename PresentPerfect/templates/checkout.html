@@ -1,0 +1,159 @@
+<!DOCTYPE- html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PresentPerfect - Checkout</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="/">PresentPerfect</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="home.html">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="userlogin.html">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="mycart.html">My Cart</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="myorder.html">My Order</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="display-4 text-center my-5">Checkout</h1>
+
+        <div id="cartDetails">
+            <h3 class="my-4">Your Cart</h3>
+            <table class="table" id="checkoutTable">
+                <thead>
+                    <tr>
+                        <th>Gift</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Cart items will be dynamically populated here -->
+                </tbody>
+            </table>
+            <h4 class="text-right">Grand Total: $<span id="grandTotal">0.00</span></h4>
+        </div>
+
+        <div id="paymentSection" class="my-5">
+            <h3>Payment Options</h3>
+            <form id="paymentForm">
+                <div class="form-group">
+                    <label for="paymentMethod">Choose a payment method:</label>
+                    <select class="form-control" id="paymentMethod">
+                        <option value="credit-card">Credit Card</option>
+                        <option value="paypal">PayPal</option>
+                        <option value="bank-transfer">Bank Transfer</option>
+                    </select>
+                </div>
+
+                <div id="creditCardForm" style="display:none;">
+                    <div class="form-group">
+                        <label for="cardNumber">Card Number</label>
+                        <input type="text" class="form-control" id="cardNumber" placeholder="Enter your card number">
+                    </div>
+                    <div class="form-group">
+                        <label for="expiryDate">Expiry Date</label>
+                        <input type="text" class="form-control" id="expiryDate" placeholder="MM/YY">
+                    </div>
+                    <div class="form-group">
+                        <label for="cvv">CVV</label>
+                        <input type="text" class="form-control" id="cvv" placeholder="CVV">
+                    </div>
+                </div>
+
+                <div id="paypalForm" style="display:none;">
+                    <div class="alert alert-info">You will be redirected to PayPal to complete your payment.</div>
+                </div>
+
+                <div id="bankTransferForm" style="display:none;">
+                    <div class="alert alert-info">Please transfer the total amount to the following account: <br> Account No: 1234567890<br> Bank: ABC Bank<br> IFSC: ABCD1234</div>
+                </div>
+
+                <button type="submit" class="btn btn-success">Place Order</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Load cart from localStorage
+        function loadCart() {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            let checkoutTableBody = document.querySelector('#checkoutTable tbody');
+            let grandTotalElement = document.getElementById('grandTotal');
+            let grandTotal = 0;
+
+            checkoutTableBody.innerHTML = '';
+
+            if (cart.length === 0) {
+                checkoutTableBody.innerHTML = '<tr><td colspan="4" class="text-center">Your cart is empty!</td></tr>';
+                return;
+            }
+
+            cart.forEach(item => {
+                let total = item.price * item.quantity;
+                grandTotal += total;
+                checkoutTableBody.innerHTML += `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.quantity}</td>
+                        <td>$${item.price}</td>
+                        <td>$${total.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+
+            grandTotalElement.textContent = grandTotal.toFixed(2);
+        }
+
+        // Handle form submission
+        document.getElementById('paymentForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let totalAmount = document.getElementById('grandTotal').textContent;
+
+        if (cart.length === 0) {
+           alert('Your cart is empty!');
+           return;
+        }
+
+        // Add current order to the localStorage orders array
+        let orders = JSON.parse(localStorage.getItem('orders')) || [];
+        let timestamp = new Date().toLocaleString();
+        let newOrder = {
+            cart: cart,
+            totalAmount: totalAmount,
+            timestamp: timestamp
+        };
+        orders.push(newOrder);
+        localStorage.setItem('orders', JSON.stringify(orders));
+
+        alert('Order placed successfully!');
+
+    // Clear cart after placing the order
+        localStorage.removeItem('cart');
+
+    // Redirect to home page
+        window.location.href = '../home.html';
+    });
+
+        // Initialize cart on page load
+        document.addEventListener('DOMContentLoaded', loadCart);
+    </script>
+</body>
+</html>
